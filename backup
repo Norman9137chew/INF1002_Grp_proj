@@ -1,0 +1,153 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define MAX_BAR_WIDTH 50 // Maximum width of the bars to fit on the screen
+
+int getMaxValue(int* values, int num_values) {
+    int max = values[0];
+    for (int i = 1; i < num_values; ++i) {
+        if (values[i] > max) {
+            max = values[i];
+        }
+    }
+    return max;
+}
+
+void printAxisLabels(const char* xlabel, const char* ylabel) {
+    printf("\nY-axis: %s\n\n", ylabel);
+    printf("X-axis:");
+    printf(" %s\n", xlabel, " %s\n");
+}
+
+void plotBarGraph(int* values, int num_values, char** variable_names, const char* title, const char* xlabel, const char* ylabel) {
+    int max_value = getMaxValue(values, num_values);
+    double scale = max_value > MAX_BAR_WIDTH ? (double)MAX_BAR_WIDTH / max_value : 1;
+
+    // Print the graph title
+    printf("\nGraph Title : \n%s\n\n", title);
+
+    // Print the top border of the graph
+    printf(" +");
+    for (int i = 0; i < MAX_BAR_WIDTH; i++) {
+        printf("-");
+    }
+    printf("+\n");
+
+    // Print bars with scaling and value
+    for (int i = 0; i < num_values; i++) {
+        int scaled_length = (int)(values[i] * scale);
+        printf("| %-*s | ", 15, variable_names[i]); // Left-align the text in a field width of 15
+        for (int j = 0; j < scaled_length; j++) {
+            printf("#");
+        }
+        printf("%*s|%5d |\n", MAX_BAR_WIDTH - scaled_length, "", values[i]); // Right-align the bar and print the value
+    }
+
+    // Print the bottom border of the graph
+    printf(" +");
+    for (int i = 0; i < MAX_BAR_WIDTH; i++) {
+        printf("-");
+    }
+    printf("+\n");
+
+    // Print the labels for x and y axes
+    printAxisLabels(xlabel, ylabel);
+}
+
+void writeGraphToFile(int* values, int num_values, char** variable_names, const char* title, const char* xlabel, const char* ylabel, const char* filename) {
+    FILE* file = fopen(filename, "w");
+    if (!file) {
+        printf("Failed to open file for writing.\n");
+        return;
+    }
+
+    int max_value = getMaxValue(values, num_values);
+    double scale = max_value > MAX_BAR_WIDTH ? (double)MAX_BAR_WIDTH / max_value : 1;
+
+    fprintf(file, "Graph Title : \n%s\n\n", title);
+    fprintf(file, " +");
+    for (int i = 0; i < MAX_BAR_WIDTH; i++) {
+        fprintf(file, "-");
+    }
+    fprintf(file, "+\n");
+
+    for (int i = 0; i < num_values; i++) {
+        int scaled_length = (int)(values[i] * scale);
+        fprintf(file, "| %-*s | ", 15, variable_names[i]);
+        for (int j = 0; j < scaled_length; j++) {
+            fprintf(file, "#");
+        }
+        fprintf(file, "%*s|%5d |\n", MAX_BAR_WIDTH - scaled_length, "", values[i]); // Right-align the bar and print the value
+    }
+
+    fprintf(file, " +");
+    for (int i = 0; i < MAX_BAR_WIDTH; i++) {
+        fprintf(file, "-");
+    }
+    fprintf(file, "+\n");
+
+    // Print the labels for x and y axes in the file
+    fprintf(file, "\nY-axis: %s\nX-axis: ", ylabel);
+    for (int i = 0; i < MAX_BAR_WIDTH + 4; i++) { // The '+4' is for padding to align with the graph
+        fprintf(file, "-");
+    }
+    fprintf(file, "> %s\n\n", xlabel);
+
+    fclose(file);
+}
+
+int main() {
+    int num_variables;
+    char title[256], xlabel[256], ylabel[256], response[10], filename[256];
+    int is_correct = 0, save_output;
+
+    printf("Enter the graph title: ");
+    scanf(" %[^\n]", title);
+    printf("Enter the x-axis label: ");
+    scanf(" %[^\n]", xlabel);
+    printf("Enter the y-axis label: ");
+    scanf(" %[^\n]", ylabel);
+
+    do {
+        printf("Enter the number of variables: ");
+        scanf("%d", &num_variables);
+
+        int* values = (int*)malloc(num_variables * sizeof(int));
+        char** variable_names = (char**)malloc(num_variables * sizeof(char*));
+        for (int i = 0; i < num_variables; i++) {
+            variable_names[i] = (char*)malloc(256 * sizeof(char));
+            printf("Variable %d name: ", i + 1);
+            scanf(" %[^\n]", variable_names[i]);
+            printf("Variable %d value: ", i + 1);
+            scanf("%d", &values[i]);
+        }
+
+        plotBarGraph(values, num_variables, variable_names, title, xlabel, ylabel);
+
+        printf("Is the graph correct? (yes/no): ");
+        scanf("%s", response);
+        is_correct = (strcmp(response, "yes") == 0);
+
+        if (is_correct) {
+            printf("Do you want to save the graph output? (yes/no): ");
+            scanf("%s", response);
+            save_output = (strcmp(response, "yes") == 0);
+
+            if (save_output) {
+                printf("Enter filename to save the graph: ");
+                scanf("%s", filename);
+                writeGraphToFile(values, num_variables, variable_names, title, xlabel, ylabel, filename);
+                printf("Graph saved to %s\n", filename);
+            }
+        }
+
+        for (int i = 0; i < num_variables; i++) {
+            free(variable_names[i]);
+        }
+        free(variable_names);
+        free(values);
+
+    } while (!is_correct);
+
+    return 0;
+}

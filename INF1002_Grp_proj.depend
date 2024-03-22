@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1709971832 source:d:\inf1002 programming fundamentals\c_code\inf1002_grp_proj\main.c
+	<stdio.h>
+	<stdlib.h>
+

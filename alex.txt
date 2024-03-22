@@ -1,0 +1,16 @@
+                                                                                   GDP
+
+  SG            | XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+MY              | XXXXXXXXXXXXXXXXXXXXXXXXXX
+                 +------------------------------------------------------------------+-----------------------------------------------------------------+
+                 0                                                                 5                                                               10
+                                                                                   USD
+
+---
+Title: GDP
+X-axis Label: USD
+Number of Categories: 2
+
+Categories:
+    SG  : 10
+  MY  : 2
